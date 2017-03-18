@@ -14,7 +14,7 @@
         <ion-icon name="contact" item-left></ion-icon>Driver
       </ion-card-header>
       <ion-card-content>
-        <b>{{driver.driver_name}}</b>
+        <b>{{driver.driver_name}} {{driver.driver_lastname}}</b>
       </ion-card-content>
     </ion-card>
     </ion-item>
@@ -24,26 +24,26 @@
       <ion-icon name="bus" item-left></ion-icon>Bus and Route
     </ion-card-header>
     <ion-card-content>
-      <b>{{driver.bus_name}}</b> in <b>{{driver.driver_route}}</b>
+      <b>{{driver.bus_name}}</b> <b>{{driver.bus_status}}</b> in <b> {{driver.route_name}}</b>
     </ion-card-content>
   </ion-card>
   </ion-item>
   <ion-item>
     <ion-label>Select Route</ion-label>
-    <ion-select [(ngModel)]="route">
+    <ion-select [disabled]="status" [(ngModel)]="route">
       <ion-option *ngFor="let route of routes">{{route.route_name}}</ion-option>
     </ion-select>
   </ion-item>
   <ion-item>
     <ion-label>Select Bus Status</ion-label>
-    <ion-select [(ngModel)]="status">
+    <ion-select [disabled]="route" [(ngModel)]="status">
       <ion-option>Active</ion-option>
       <ion-option>Inactive</ion-option>
       <ion-option>Changing Drivers</ion-option>
     </ion-select>
   </ion-item>
   </ion-list>
-  <button ion-button color="secondary" block>Update</button>
+  <button [disabled]="!route&&!status" (click)="update()" ion-button color="secondary" block>Update</button>
   
 
 </ion-content>

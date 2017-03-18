@@ -10,7 +10,7 @@ import { Auth } from '../providers/auth';
   templateUrl: 'app.html'
 })
 export class MyApp {
-  rootPage=HomePage;
+  rootPage=LoginPage;
 
   constructor(platform: Platform, public auth:Auth) {
     // this.auth.login().then((isLoggedIn)=>{

@@ -1,0 +1,12 @@
+{
+    "driver":{
+      "driver_ID":1, 
+      "driver_name":"Carmelo",
+      "driver_lastname":"Anthony",
+      "route_ID":2,
+      "route_name":"Route 2",
+      "bus_ID":1,      
+      "bus_name": "Bus M",
+      "bus_status":"Inactive"
+    }
+}

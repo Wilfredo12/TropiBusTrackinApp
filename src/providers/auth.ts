@@ -10,15 +10,33 @@ import 'rxjs/add/operator/map';
 */
 @Injectable()
 export class Auth {
-
+  drivers:any
   constructor(public http: Http) {
     console.log('Hello Auth Provider');
+
+    this.drivers=[{
+      driver_ID:0, 
+      username:"Juan",
+      password:"Juan"      
+    },
+    {
+      driver_ID:1, 
+      username:"Car",
+      password:"Car"
+    }]
   }
-login(){
-  return new Promise((resolve)=>{
-    setTimeout(()=>{
-      resolve(true);
-    },3000);
-  });
+login(username, password){
+  return new Promise(resolve=>{
+    var driver_ID=-1
+      for(var i=0;i<this.drivers.length;i++){
+        if(this.drivers[i].username==username&&this.drivers[i].password==password){
+          driver_ID= this.drivers[i].driver_ID;
+          break;
+        }
+      }
+      resolve(driver_ID)
+  })  
+  
 }
+
 }
