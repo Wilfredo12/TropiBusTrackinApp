@@ -1,7 +1,10 @@
 import { Component } from '@angular/core';
-import { NavController, NavParams } from 'ionic-angular';
+import { NavController, NavParams, AlertController } from 'ionic-angular';
+import {Geolocation} from 'ionic-native';
+import { Auth } from '../../providers/auth';
 import { InfoService } from '../../providers/info-service';
 import { LocationService } from '../../providers/location-service';
+import { LoginPage } from '../login/login';
 @Component({
   selector: 'page-home',
   templateUrl: 'home.html'
@@ -12,7 +15,9 @@ export class HomePage {
   routes:any;
   status=null;
   route=null;
-  constructor(public navCtrl: NavController,public navParams:NavParams,public locationService:LocationService,public infoService:InfoService) {
+  loggedIn:boolean;
+  constructor(public navCtrl: NavController,public auth:Auth,public navParams:NavParams,public locationService:LocationService,public infoService:InfoService,
+          public alertCtrl:AlertController) {
     //todo cuando haga el get de driver inicialzar ruta y estado con base datos
     
     // this.driver={
@@ -23,9 +28,14 @@ export class HomePage {
           
   }
   ngOnInit(){
+    this.loggedIn=true;
     this.driver={}
     this.driver_ID=Number(localStorage.getItem("userID"));
-   
+
+    if(this.driver_ID==null){
+      this.navCtrl.setRoot(LoginPage);
+    }
+    
     this.infoService.getRoutes().then(response =>{
         this.routes=response;
         console.log(response)
@@ -34,6 +44,7 @@ export class HomePage {
       this.driver=response;
       console.log(this.driver)
     })
+    this.locationCycle();
   }
   update(){
     console.log(this.route)
@@ -46,6 +57,32 @@ export class HomePage {
     this.status=null;
     
   }
+  locationCycle(){
+    Geolocation.getCurrentPosition().then((myposition) => {
+      //check de internet
+      //enviar id de driver
+      let location= {lat:myposition.coords.latitude,lng: myposition.coords.longitude}
+      this.locationService.sendLocation(location);
+        
+        
+       }, (err) => {
+         let alert = this.alertCtrl.create({
+            title: 'Location not enable',
+            subTitle: 'Please go to location settings and enable location',
+            buttons: ['Dismiss']
+          });
+          alert.present();
+          console.log(err);
+    })
+    setTimeout(()=>{
+      if(this.loggedIn) this.locationCycle();
+    },5000);
+  }
+  logout(){
+    localStorage.setItem("userID",null);
+    this.loggedIn=false;
+    this.navCtrl.setRoot(LoginPage);
+}
 }
 
 

@@ -11,14 +11,12 @@ export class LoginPage {
   registerCredentials = {username: '', password: ''};
   userID:number;
   constructor(public navCtrl: NavController,public auth:Auth) {
-
+    //todo chequiar si ya estaba logueado
   }
   login(){
     this.auth.login(this.registerCredentials.username,this.registerCredentials.password)
     .then((isLoggedIn)=>{
-      console.log(typeof isLoggedIn)
-               
-
+             
         if(isLoggedIn!=-1) {          
           localStorage.setItem('userID',String(isLoggedIn));
           this.navCtrl.setRoot(HomePage);
