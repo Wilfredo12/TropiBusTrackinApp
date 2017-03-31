@@ -14,7 +14,9 @@ export class LocationService {
   constructor(public http: Http) {
     console.log('Hello LocationService Provider');
   }
-  sendLocation(location){
-    console.log(location)
+  sendLocation(locationInfo){
+      console.log(locationInfo)
+      let url="http://localhost:5000/bustrackingRoutes/updateBusLocation"
+      return this.http.put(url,locationInfo).map(res=>res.json());
   }
 }

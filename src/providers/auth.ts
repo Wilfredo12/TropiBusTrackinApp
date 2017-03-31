@@ -25,17 +25,19 @@ export class Auth {
       password:"Car"
     }]
   }
-login(username, password){
-  return new Promise(resolve=>{
-    var driver_ID=-1
-      for(var i=0;i<this.drivers.length;i++){
-        if(this.drivers[i].username==username&&this.drivers[i].password==password){
-          driver_ID= this.drivers[i].driver_ID;
-          break;
-        }
-      }
-      resolve(driver_ID)
-  })  
+login(user){
+
+  let url="http://localhost:5000/bustrackingRoutes/login"
+  return this.http.post(url,user).map(res=>res.json())
+  
+  
+}
+logout(driverid){
+  var driverID={
+    "driver_id":driverid
+  }
+  let url="http://localhost:5000/bustrackingRoutes/logout"
+  return this.http.put(url,driverID).map(res=>res.json())
   
 }
 

@@ -17,7 +17,7 @@
         <ion-icon name="contact" item-left></ion-icon>Driver
       </ion-card-header>
       <ion-card-content>
-        <b>{{driver.driver_name}} {{driver.driver_lastname}}</b>
+        <b>{{driver.driver_firstname}} {{driver.driver_lastname}}</b>
       </ion-card-content>
     </ion-card>
     </ion-item>
@@ -42,7 +42,7 @@
     <ion-select [disabled]="route" [(ngModel)]="status">
       <ion-option>Active</ion-option>
       <ion-option>Inactive</ion-option>
-      <ion-option>Changing Drivers</ion-option>
+      <ion-option>Changing Turn</ion-option>
     </ion-select>
   </ion-item>
   </ion-list>
