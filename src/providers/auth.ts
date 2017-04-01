@@ -14,29 +14,34 @@ export class Auth {
   constructor(public http: Http) {
     console.log('Hello Auth Provider');
 
-    this.drivers=[{
-      driver_ID:0, 
-      username:"Juan",
-      password:"Juan"      
-    },
-    {
-      driver_ID:1, 
-      username:"Car",
-      password:"Car"
-    }]
+    // this.drivers=[{
+    //   driver_ID:0, 
+    //   username:"Juan",
+    //   password:"Juan"      
+    // },
+    // {
+    //   driver_ID:1, 
+    //   username:"Car",
+    //   password:"Car"
+    // }]
   }
+//method used to call server and check if the credentials entered are correct
 login(user){
-
+  //server url
   let url="http://localhost:5000/bustrackingRoutes/login"
+  //calling server with user credentials
   return this.http.post(url,user).map(res=>res.json())
   
   
 }
+//method to logout driver from system
 logout(driverid){
   var driverID={
     "driver_id":driverid
   }
+  //server url
   let url="http://localhost:5000/bustrackingRoutes/logout"
+  //calling server to logout driver with the specified driver id
   return this.http.put(url,driverID).map(res=>res.json())
   
 }

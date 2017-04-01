@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { NavController, NavParams, LoadingController,AlertController } from 'ionic-angular';
+import { NavController, NavParams, LoadingController,AlertController,ToastController } from 'ionic-angular';
 import {Geolocation} from 'ionic-native';
 import { Auth } from '../../providers/auth';
 import { InfoService } from '../../providers/info-service';
@@ -16,7 +16,7 @@ export class HomePage {
   status=null;
   route=null;
   loggedIn:boolean;
-  constructor(public navCtrl: NavController,public loading:LoadingController, public auth:Auth,public navParams:NavParams,public locationService:LocationService,public infoService:InfoService,
+  constructor(public navCtrl: NavController,public toastCtrl:ToastController,public loading:LoadingController, public auth:Auth,public navParams:NavParams,public locationService:LocationService,public infoService:InfoService,
           public alertCtrl:AlertController) {
     //todo cuando haga el get de driver inicialzar ruta y estado con base datos
     
@@ -72,6 +72,7 @@ export class HomePage {
     this.infoService.update(this.driver_ID,this.driver.bus_id,this.route[0],this.status).subscribe(response=>{
       this.driver=response;
       loading.dismiss();
+      this.presentToast("Succesfully Updated")
     },err => {
         if(err.status==0){
           this.presentAlert("No Internet Connection","Please establish a connection and try again");
@@ -109,6 +110,7 @@ export class HomePage {
         if(data.success==1) { 
           localStorage.setItem("userID",null);
           this.loggedIn=false;
+          this.presentToast("Succesfully Logged out")
           this.navCtrl.setRoot(LoginPage);          
         }
         else this.presentAlert('Could not logged out',"Try again");
@@ -126,6 +128,15 @@ presentAlert(titl,subTitl){
             subTitle: subTitl,
             buttons: ['Dismiss']
           });
+    alert.present();
+}
+presentToast(message) {
+  let toast = this.toastCtrl.create({
+    message: message,
+    duration: 3000,
+    position: 'top'
+  });
+  toast.present();
 }
 }
 

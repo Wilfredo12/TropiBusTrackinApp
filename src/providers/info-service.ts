@@ -15,6 +15,7 @@ export class InfoService {
   constructor(public http: Http) {
 
   }
+  //this method connects to server and get the driver info 
   getComplete_Bus_Driver_Info(driverID){
     var driver_id={
       "driver_id":driverID
@@ -32,33 +33,44 @@ export class InfoService {
     // })
     
   }
+  //this method establishes a connection with the server and retrieves all the route ids and name
   getRoutes(){
-    
+    //server url
     let url="http://localhost:5000/bustrackingRoutes/getRoutes"
+    //calling server
     return this.http.get(url).map(res=>res.json())
+    
     // return new Promise(resolve=>{
     //   resolve(this.routes);
     // })
      
   }
+
+  //this method either updates the routes or the status
   update(driverid,busid,route,status){
-    
+    //if route is null it means with are updating bus status
     if(route!=null){
+      //creating bus status predefined object to be recieved on server
       var info={
         "driver_id":driverid,
         "bus_id":busid,
         "route_id":route.route_id
       }
+      //server url
       let url="http://localhost:5000/bustrackingRoutes/changeDriverRoute"
+      //calling server
       return this.http.put(url,info).map(res=>res.json())
     }
     else {
+      //creating update route predefined object to be received on server
       var info2={
         "driver_id":driverid,
         "bus_id":busid,
         "bus_status":status
       }
+      //server url
       let url="http://localhost:5000/bustrackingRoutes/updateBusStatus"
+      //call server
       return this.http.put(url,info2).map(res=>res.json())
     }
     // return new Promise(resolve=>{
