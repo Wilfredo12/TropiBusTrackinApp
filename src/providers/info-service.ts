@@ -20,7 +20,8 @@ export class InfoService {
     var driver_id={
       "driver_id":driverID
     }
-    let url="http://localhost:5000/bustrackingRoutes/getDriverInfo"
+    let url="https://evening-crag-15118.herokuapp.com/bustrackingRoutes/getDriverInfo"
+    //let url="http://localhost:5000/bustrackingRoutes/getDriverInfo"
     return this.http.post(url,driver_id).map(res=>res.json())
     // return new Promise(resolve=>{
     //   var driver={}
@@ -36,7 +37,8 @@ export class InfoService {
   //this method establishes a connection with the server and retrieves all the route ids and name
   getRoutes(){
     //server url
-    let url="http://localhost:5000/bustrackingRoutes/getRoutes"
+    let url="https://evening-crag-15118.herokuapp.com/bustrackingRoutes/getRoutes"
+    //let url="http://localhost:5000/bustrackingRoutes/getRoutes"
     //calling server
     return this.http.get(url).map(res=>res.json())
     
@@ -57,7 +59,8 @@ export class InfoService {
         "route_id":route.route_id
       }
       //server url
-      let url="http://localhost:5000/bustrackingRoutes/changeDriverRoute"
+      let url="https://evening-crag-15118.herokuapp.com/bustrackingRoutes/changeDriverRoute"
+      //let url="http://localhost:5000/bustrackingRoutes/changeDriverRoute"
       //calling server
       return this.http.put(url,info).map(res=>res.json())
     }
@@ -69,7 +72,8 @@ export class InfoService {
         "bus_status":status
       }
       //server url
-      let url="http://localhost:5000/bustrackingRoutes/updateBusStatus"
+      let url="https://evening-crag-15118.herokuapp.com/bustrackingRoutes/updateBusStatus"
+      //let url="http://localhost:5000/bustrackingRoutes/updateBusStatus"
       //call server
       return this.http.put(url,info2).map(res=>res.json())
     }

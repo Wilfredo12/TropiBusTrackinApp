@@ -12,10 +12,10 @@ export class LoginPage {
   userID:number;
   constructor(public navCtrl: NavController,public auth:Auth,public alertCtrl:AlertController) {
     //if driver was already logged in, go to home page
-    let driver_ID=Number(localStorage.getItem("userID"));
-    if(driver_ID!=null&&driver_ID>=0){
-      this.navCtrl.setRoot(HomePage);
-    }
+    // let driver_ID=Number(localStorage.getItem("userID"));
+    // if(driver_ID!=null&&driver_ID>=0){
+    //   this.navCtrl.setRoot(HomePage);
+    // }
   }
 
  //this method is used to login drivers into application

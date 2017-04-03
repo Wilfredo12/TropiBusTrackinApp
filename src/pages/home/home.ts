@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { NavController, NavParams, LoadingController,AlertController,ToastController } from 'ionic-angular';
-import {Geolocation} from 'ionic-native';
+import {Geolocation, Geoposition} from 'ionic-native';
 import { Auth } from '../../providers/auth';
 import { InfoService } from '../../providers/info-service';
 import { LocationService } from '../../providers/location-service';
@@ -16,6 +16,7 @@ export class HomePage {
   status=null;
   route=null;
   loggedIn:boolean;
+  locationEnable:boolean=true;
   constructor(public navCtrl: NavController,public toastCtrl:ToastController,public loading:LoadingController, public auth:Auth,public navParams:NavParams,public locationService:LocationService,public infoService:InfoService,
           public alertCtrl:AlertController) {
     //todo cuando haga el get de driver inicialzar ruta y estado con base datos
@@ -52,11 +53,16 @@ export class HomePage {
       loading.dismiss();
       if(this.driver!=undefined){
       this.locationCycle();
-    }
-    else{
-      //if driver has not been assigned a bus
-      this.presentAlert("You have not been assigned a bus","Contact Administrator")
-    }
+      }
+      else{
+        //if driver has not been assigned a bus
+        this.presentAlert("You have not been assigned a bus","Contact Administrator")
+      }
+    },err => {
+        if(err.status==0){
+          loading.dismiss();
+          this.presentAlert("Error Connecting to Server","Please establish a connection and try again");
+        }  
     })
     
     
@@ -74,7 +80,9 @@ export class HomePage {
       loading.dismiss();
       this.presentToast("Succesfully Updated")
     },err => {
+        console.log("error status",err.status)
         if(err.status==0){
+          loading.dismiss();
           this.presentAlert("Error Connecting to Server","Please establish a connection and try again");
         }  
     });
@@ -83,27 +91,46 @@ export class HomePage {
     
   }
   //this method sends the location of the bus to the server
-  locationCycle(){
+   locationCycle(){
+    
+    if(this.driver.bus_status!="Inactive"){
     Geolocation.getCurrentPosition().then((myposition) => {
-      
-      let locationInfo= {driver_id:this.driver_ID,lat:myposition.coords.latitude,lng: myposition.coords.longitude}
-      this.locationService.sendLocation(locationInfo).subscribe(success=>{
-        
+      if (myposition.coords === undefined) {
+          
+          this.presentToastBottom("positionError");
+
+        //case: data = Geoposition
+        } else {
+          this.locationEnable=true;      
+            let locationInfo= {driver_id:this.driver_ID,lat:myposition.coords.latitude,lng: myposition.coords.longitude}
+            this.locationService.sendLocation(locationInfo).subscribe(success=>{
+            this.presentToastBottom("Location updated successfully")
           },err => {
-            if(err.status==0){
+            console.log("error on location",err)
+            if(err.status===0){
               //if there is no connection to server present alert
-              this.presentAlert("No Internet Connection","Please establish a connection and try again");
+              this.presentToastBottom("Error connecting to server");
               
             }
             
         });
-       }, (err) => {
-         //if location is not enable present alert
+        }
+      
+       }).catch((err) => {
+        //if location is not enable present alert
+        console.log("error on location 2",err)
+        if(this.locationEnable){
          this.presentAlert('Location not enable','Please go to location settings and enable location')
-    })
+         this.locationEnable=false
+      }
+         
+});
+    }
+    
     //run location cycle every 5 seconds if driver is still logged in to the application
     setTimeout(()=>{
-      if(this.loggedIn) this.locationCycle();
+      //if user logouts
+      if(this.loggedIn) {this.locationCycle();}
     },5000);
   }
 
@@ -124,7 +151,7 @@ export class HomePage {
     },err => {
             if(err.status==0){
               //present alert is log out could not be process by server
-              this.presentAlert("No Internet Connection","Please establish a connection and try again");
+              this.presentAlert("Error Connecting","Please establish a connection and try again");
               
             }
             
@@ -144,8 +171,16 @@ presentAlert(title,subTitle){
 presentToast(message) {
   let toast = this.toastCtrl.create({
     message: message,
+    duration: 2000,
+    position: 'middle'
+  });
+  toast.present();
+}
+presentToastBottom(message) {
+  let toast = this.toastCtrl.create({
+    message: message,
     duration: 3000,
-    position: 'top'
+    position: 'bottom'
   });
   toast.present();
 }
