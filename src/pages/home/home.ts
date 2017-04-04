@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { NavController, NavParams, LoadingController,AlertController,ToastController } from 'ionic-angular';
-import {Geolocation, Geoposition} from 'ionic-native';
+import {Geolocation} from 'ionic-native';
 import { Auth } from '../../providers/auth';
 import { InfoService } from '../../providers/info-service';
 import { LocationService } from '../../providers/location-service';
@@ -93,14 +93,16 @@ export class HomePage {
   //this method sends the location of the bus to the server
    locationCycle(){
     
-    if(this.driver.bus_status!="Inactive"){
-    Geolocation.getCurrentPosition().then((myposition) => {
+    
+    Geolocation.getCurrentPosition({timeout:1000, enableHighAccuracy:true}).then((myposition) => {
+      if(this.driver.bus_status!="Inactive"){
       if (myposition.coords === undefined) {
-          
+          console.log(myposition.coords)
           this.presentToastBottom("positionError");
 
         //case: data = Geoposition
-        } else {
+      } else {
+        console.log(myposition.coords)
           this.locationEnable=true;      
             let locationInfo= {driver_id:this.driver_ID,lat:myposition.coords.latitude,lng: myposition.coords.longitude}
             this.locationService.sendLocation(locationInfo).subscribe(success=>{
@@ -114,7 +116,8 @@ export class HomePage {
             }
             
         });
-        }
+      }
+    }
       
        }).catch((err) => {
         //if location is not enable present alert
@@ -125,7 +128,6 @@ export class HomePage {
       }
          
 });
-    }
     
     //run location cycle every 5 seconds if driver is still logged in to the application
     setTimeout(()=>{

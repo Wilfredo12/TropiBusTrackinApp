@@ -29,7 +29,7 @@ export class Auth {
 login(user){
   //server url
   let url="https://evening-crag-15118.herokuapp.com/bustrackingRoutes/login"
-  //let url="http://localhost:5000/bustrackingRoutes/login"
+  //let url="http://localhost:8080/bustrackingRoutes/login"
   //calling server with user credentials
   return this.http.post(url,user).map(res=>res.json())
   
@@ -42,7 +42,7 @@ logout(driverid){
   }
   //server url
   let url="https://evening-crag-15118.herokuapp.com/bustrackingRoutes/logout"
-  ///let url="http://localhost:5000/bustrackingRoutes/logout"
+  //let url="http://localhost:8080/bustrackingRoutes/logout"
   //calling server to logout driver with the specified driver id
   return this.http.put(url,driverID).map(res=>res.json())
   
