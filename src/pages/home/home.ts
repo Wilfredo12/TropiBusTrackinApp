@@ -1,6 +1,6 @@
-import { Component } from '@angular/core';
+import { Component, NgZone } from '@angular/core';
 import { NavController, NavParams, LoadingController,AlertController,ToastController } from 'ionic-angular';
-import {Geolocation} from 'ionic-native';
+import {Geolocation, Geoposition,BackgroundGeolocation} from 'ionic-native';
 import { Auth } from '../../providers/auth';
 import { InfoService } from '../../providers/info-service';
 import { LocationService } from '../../providers/location-service';
@@ -16,8 +16,9 @@ export class HomePage {
   status=null;
   route=null;
   loggedIn:boolean;
+  watch:any;
   locationEnable:boolean=true;
-  constructor(public navCtrl: NavController,public toastCtrl:ToastController,public loading:LoadingController, public auth:Auth,public navParams:NavParams,public locationService:LocationService,public infoService:InfoService,
+  constructor(public navCtrl: NavController, public zone:NgZone,public toastCtrl:ToastController,public loading:LoadingController, public auth:Auth,public navParams:NavParams,public locationService:LocationService,public infoService:InfoService,
           public alertCtrl:AlertController) {
     //todo cuando haga el get de driver inicialzar ruta y estado con base datos
     
@@ -52,7 +53,7 @@ export class HomePage {
       this.driver=response;
       loading.dismiss();
       if(this.driver!=undefined){
-      this.locationCycle();
+        this.locationCycle();
       }
       else{
         //if driver has not been assigned a bus
@@ -94,17 +95,68 @@ export class HomePage {
    locationCycle(){
     
     
-    Geolocation.getCurrentPosition({timeout:1000, enableHighAccuracy:true}).then((myposition) => {
+//     Geolocation.getCurrentPosition({timeout:1000, enableHighAccuracy:true}).then((myposition) => {
+//       if(this.driver.bus_status!="Inactive"){
+//       if (myposition.coords === undefined) {
+//           console.log(myposition.coords)
+//           this.presentToastBottom("positionError");
+
+//         //case: data = Geoposition
+//       } else {
+//         console.log(myposition.coords)
+//           this.locationEnable=true;      
+//             let locationInfo= {driver_id:this.driver_ID,lat:myposition.coords.latitude,lng: myposition.coords.longitude}
+//             this.locationService.sendLocation(locationInfo).subscribe(success=>{
+//             this.presentToastBottom("Location updated successfully")
+//           },err => {
+//             console.log("error on location",err)
+//             if(err.status===0){
+//               //if there is no connection to server present alert
+//               this.presentToastBottom("Error connecting to server");
+              
+//             }
+            
+//         });
+//       }
+//     }
+      
+//        }).catch((err) => {
+//         //if location is not enable present alert
+//         console.log("error on location 2",err)
+//         if(this.locationEnable){
+//          this.presentAlert('Location not enable','Please go to location settings and enable location')
+//          this.locationEnable=false
+//       }
+         
+// });
+    
+//     //run location cycle every 5 seconds if driver is still logged in to the application
+//     setTimeout(()=>{
+//       //if user logouts
+//       if(this.loggedIn) {this.locationCycle();}
+//     },5000);
+
+  let options = {
+    maximumAge:5000,
+    timeout:7000,
+    frequency: 5000, 
+    enableHighAccuracy: true
+  };
+ 
+  this.watch = Geolocation.watchPosition(options).subscribe((position: Geoposition) => {
+  
+      // Run update inside of Angular's zone
+    
       if(this.driver.bus_status!="Inactive"){
-      if (myposition.coords === undefined) {
-          console.log(myposition.coords)
+      if (position.coords === undefined) {
+          console.log(position.coords)
           this.presentToastBottom("positionError");
 
         //case: data = Geoposition
       } else {
-        console.log(myposition.coords)
+        console.log(position.coords)
           this.locationEnable=true;      
-            let locationInfo= {driver_id:this.driver_ID,lat:myposition.coords.latitude,lng: myposition.coords.longitude}
+            let locationInfo= {driver_id:this.driver_ID,lat:position.coords.latitude,lng: position.coords.longitude}
             this.locationService.sendLocation(locationInfo).subscribe(success=>{
             this.presentToastBottom("Location updated successfully")
           },err => {
@@ -119,22 +171,19 @@ export class HomePage {
       }
     }
       
-       }).catch((err) => {
+       },err => {
         //if location is not enable present alert
         console.log("error on location 2",err)
         if(this.locationEnable){
          this.presentAlert('Location not enable','Please go to location settings and enable location')
          this.locationEnable=false
       }
-         
-});
-    
-    //run location cycle every 5 seconds if driver is still logged in to the application
-    setTimeout(()=>{
-      //if user logouts
-      if(this.loggedIn) {this.locationCycle();}
-    },5000);
+      
+      
+    });
+  
   }
+  
 
   //this method logs out driver from system
   logout(){
@@ -145,6 +194,9 @@ export class HomePage {
         if(data.success==1) { 
           localStorage.setItem("userID",null);
           this.loggedIn=false;
+          if(this.watch){
+          this.watch.unsubscribe();
+          }
           this.presentToast("Succesfully Logged out")
           this.navCtrl.setRoot(LoginPage);          
         }

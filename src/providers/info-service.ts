@@ -21,8 +21,8 @@ export class InfoService {
     // var driver_id={
     //   "driver_id":driverID
     // }
-    //let url="https://evening-crag-15118.herokuapp.com/bustrackingRoutes/getDriverInfo"
-    let url="http://localhost:8080/bustrackingRoutes/getDriverInfo"
+    let url="https://evening-crag-15118.herokuapp.com/bustrackingRoutes/getDriverInfo"
+    //let url="http://localhost:8080/bustrackingRoutes/getDriverInfo"
     return this.http.get(url+"?driver_id="+driverID).map(res=>res.json())
     // return new Promise(resolve=>{
     //   var driver={}
